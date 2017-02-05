@@ -1,7 +1,7 @@
 package com.victor.game.war
 
 /**
-  * Created by victor on 02.02.17.
+  * состояние игры
   */
 sealed trait GameState
 case object Waiting extends GameState

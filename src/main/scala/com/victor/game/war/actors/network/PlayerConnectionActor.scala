@@ -12,8 +12,7 @@ import com.victor.game.war.message.service.WriteToClient
   * передается при создании
   */
 class PlayerConnectionActor(connection : ActorRef) extends Actor{
-  val log = Logging(context.system, this);
-  import context.system;
+  val log = Logging(context.system, this);;
   context watch connection;
   connection ! Write(ByteString("Привет! Попробую найти тебе противника!\n"));
   override def receive: Receive = {

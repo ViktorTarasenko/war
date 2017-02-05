@@ -2,10 +2,9 @@ package com.victor.game.war.actors.game
 
 import java.util.concurrent.TimeUnit
 
-import akka.actor.{ActorRef, FSM, Props, Terminated}
+import akka.actor.{ActorRef, ActorRefFactory, FSM, Terminated}
 import akka.io.Tcp._
 import akka.util.ByteString
-import com.victor.game.war.actors.network.PlayerConnectionActor
 import com.victor.game.war.message.NumberGenerated
 import com.victor.game.war.message.player._
 import com.victor.game.war.message.service.{PlayerConnected, WriteToClient}
@@ -30,11 +29,11 @@ object GameActor{
 /**
   * актор предславляющий игру, реализован как автомат - fsm
   */
-class GameActor extends FSM[GameState,List[ActorRef]]{
+class GameActor(playerConnectionActorFactory : (ActorRefFactory,ActorRef,Integer) => ActorRef ) extends FSM[GameState,List[ActorRef]]{
   startWith(Waiting, List[ActorRef]())//изначальное состояние - ожидание
   when(Waiting){
     case Event(PlayerConnected(connection),stateData) => {
-      val handler = context.actorOf(Props[PlayerConnectionActor](new PlayerConnectionActor(connection)));
+      val handler = playerConnectionActorFactory(context,connection,stateData.length)
       context.watch(handler);
       connection ! Register(handler,useResumeWriting = false);
       val newPlayersList  = handler::stateData;
