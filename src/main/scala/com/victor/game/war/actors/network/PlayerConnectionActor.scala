@@ -11,19 +11,19 @@ import com.victor.game.war.message.service.WriteToClient
   * актор который отвечает за соединение игрока и подписан на его сокет, создается от аргумента connection - актор соединения,
   * передается при создании
   */
-class PlayerConnectionActor(connection : ActorRef) extends Actor{
-  val log = Logging(context.system, this);;
-  context watch connection;
-  connection ! Write(ByteString("Привет! Попробую найти тебе противника!\n"));
+class PlayerConnectionActor(connection: ActorRef) extends Actor {
+  val log = Logging(context.system, this)
+  context watch connection
+  connection ! Write(ByteString("Привет! Попробую найти тебе противника!\n"))
   override def receive: Receive = {
     case r @ Received(data) => {
-      context.parent ! r;
+      context.parent ! r
     }
     case PeerClosed => {
-      context stop self;
+      context stop self
     }
     case GameTerminated(reason) => {
-      val message = getEndGameReason(reason);
+      val message = getEndGameReason(reason)
       connection ! Write(ByteString(message.toString))
       context stop self
     }
@@ -31,36 +31,36 @@ class PlayerConnectionActor(connection : ActorRef) extends Actor{
       connection ! Write(ByteString("Противник найден. Нажмите пробел, когда увидите цифру 3\n"))
     }
     case WriteToClient(message) => {
-      connection ! Write(ByteString(message.toString));
+      connection ! Write(ByteString(message.toString))
     }
     case _ => {
-      log.info("got unknown message");
+      log.info("got unknown message")
     }
 
   }
-  def getEndGameReason(reason: GameTerminatedReason): String ={
+  def getEndGameReason(reason: GameTerminatedReason): String = {
     reason match {
-      case GameTerminatedUnexpectable=> {
-       "Игра закончена потому что другой игрок покинул нас!\n"
+      case GameTerminatedUnexpectable => {
+        "Игра закончена потому что другой игрок покинул нас!\n"
       }
       case GameTerminatedNormal(victory) => {
         victory match {
-          case Won(reason)=>{
+          case Won(reason) => {
             reason match {
-              case Faster=>{
-               "Вы нажали пробел первым и победили!\n"
+              case Faster => {
+                "Вы нажали пробел первым и победили!\n"
               }
-              case Slower=>{
+              case Slower => {
                 "Ваш противник поспешил и вы выйграли!\n"
               }
             }
           }
-          case Loose(reason)=>{
+          case Loose(reason) => {
             reason match {
-              case Faster=>{
-                "Вы поспешили и проиграли\n";
+              case Faster => {
+                "Вы поспешили и проиграли\n"
               }
-              case Slower=>{
+              case Slower => {
                 "Вы не успели и проиграли!\n"
               }
             }
@@ -70,4 +70,3 @@ class PlayerConnectionActor(connection : ActorRef) extends Actor{
     }
   }
 }
-

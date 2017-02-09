@@ -4,14 +4,14 @@ sealed trait GameResultReason
 case object Faster extends GameResultReason
 case object Slower extends GameResultReason
 
-sealed trait Victory;
+sealed trait Victory
 case class Loose(reason: GameResultReason) extends Victory
 case class Won(reason: GameResultReason) extends Victory
 
-trait GameTerminatedReason;
+trait GameTerminatedReason
 case class GameTerminatedNormal(victory: Victory) extends GameTerminatedReason
-case object GameTerminatedUnexpectable extends GameTerminatedReason;
+case object GameTerminatedUnexpectable extends GameTerminatedReason
 
-case class GameTerminated(gameTerminatedReason: GameTerminatedReason);
+case class GameTerminated(gameTerminatedReason: GameTerminatedReason)
 
 
